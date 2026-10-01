@@ -1,0 +1,1 @@
+export function AdminFeedback({message,error}:{message?:string;error?:string}){return <>{message&&<div className="notice success" role="status">{message}</div>}{error&&<div className="notice error" role="alert">{error}</div>}</>}

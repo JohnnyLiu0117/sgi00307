@@ -1,0 +1,3 @@
+import { PublicShell } from '@/components/public-shell';
+export const metadata={title:'邀約資料使用說明'};
+export default function Privacy(){return <PublicShell><article className="prose"><p className="eyebrow">YOUR INFORMATION</p><h1>邀約資料使用說明</h1><p>您提供的資訊將由強尼老師劉宗騰用於演講邀約聯絡、需求討論與活動準備。</p><h2>哪些資料會被保存？</h2><p>單位、聯絡人、Email、電話、日期地點、參與對象與演講需求；若提供文章來源，也會用於了解邀約來源。</p><h2>哪些資料不會公開？</h2><p>聯絡姓名、Email、電話、活動地址、費用與原始需求均不公開。公開行事曆只顯示日期狀態，不顯示私人活動資訊。</p><h2>後續使用與更正</h2><p>本階段不會自動把您的需求傳給 AI，也不會自動公開活動、評論或照片。若希望查詢、更正或移除聯絡資料，請來信 sgi00307@gmail.com。資料僅於處理邀約及必要紀錄用途內保留，定期檢視未成交邀約。</p><h2>其他收件入口</h2><p>若透過既有 Google Form 提交，資料亦會留在該表單的 Google 服務中。請避免在自由文字欄位提供學生個資、醫療資訊或與邀約無關的敏感資料。</p></article></PublicShell>}

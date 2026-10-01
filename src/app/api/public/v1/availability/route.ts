@@ -1,0 +1,3 @@
+import { availability } from '@/services/calendar';
+import { monthRange,currentMonth } from '@/domain/calendar';
+export async function GET(req:Request){const month=new URL(req.url).searchParams.get('month')||currentMonth();try{monthRange(month);}catch{return Response.json({error:'月份格式不正確'},{status:400});}const diff=(Number(month.slice(0,4))-Number(currentMonth().slice(0,4)))*12+Number(month.slice(5))-Number(currentMonth().slice(5));if(diff<0||diff>12)return Response.json({error:'可查詢本月起 12 個月內的行程'},{status:400});try{return Response.json(await availability(month),{headers:{'Cache-Control':'no-store'}});}catch{return Response.json({error:'行程更新中，請直接洽詢'},{status:503});}}

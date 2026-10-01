@@ -1,0 +1,3 @@
+import { db } from '@/db/client';
+import { monthRange,projectAvailability } from '@/domain/calendar';
+export async function availability(month:string){const {start,end}=monthRange(month);const [blocks,sync]=await Promise.all([db.calendarBlock.findMany({where:{active:true,startsAt:{lt:end},endsAt:{gt:start}},select:{startsAt:true,endsAt:true,kind:true,active:true}}),db.syncState.findUnique({where:{id:'freebusy:'+month}})]);const fresh=!!sync?.lastSuccessAt&&!sync.error&&Date.now()-sync.lastSuccessAt.getTime()<15*60000;return {timezone:'Asia/Taipei',freshness:fresh?'fresh':'stale',updatedAt:sync?.lastSuccessAt?.toISOString()||null,days:projectAvailability(month,blocks,fresh)};}

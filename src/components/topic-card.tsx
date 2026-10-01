@@ -1,0 +1,4 @@
+import Link from 'next/link';
+import { ArrowUpRight, Clock3, Users } from 'lucide-react';
+export type TopicCardData = {id:string;title:string;summary:string;audience:string;track:string;familyName:string;offerings:{label:string}[]};
+export function TopicCard({topic,index=0}:{topic:TopicCardData;index?:number}) {return <article className={'topic-card family-'+topic.id.split('-')[0]} id={topic.id}><div className="card-top"><span className="eyebrow">{String(index+1).padStart(2,'0')} / {topic.familyName}</span><ArrowUpRight size={22}/></div><h3><Link href={'/speaking/topics/'+topic.id}>{topic.title}</Link></h3><p>{topic.summary}</p><div className="card-meta"><span><Users size={15}/>{topic.audience}</span><span><Clock3 size={15}/>{topic.offerings.map(o=>o.label).join(' · ')}</span></div><Link className="text-link" href={'/speaking/topics/'+topic.id}>了解這個講題 <span>→</span></Link></article>}

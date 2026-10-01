@@ -1,0 +1,6 @@
+import { intervalOverlaps,taipeiDate } from './inquiry';
+export type AvailabilityStatus='inquire'|'busy'|'unavailable'|'unknown';
+export type Block={startsAt:Date;endsAt:Date;kind:string;active:boolean};
+export function monthRange(month:string){if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))throw new Error('INVALID_MONTH');const [year,m]=month.split('-').map(Number);if(year<2020||year>2100)throw new Error('INVALID_MONTH');return {start:new Date(`${month}-01T00:00:00+08:00`),end:new Date(Date.UTC(year,m,1,-8)),count:new Date(Date.UTC(year,m,0)).getUTCDate()};}
+export function projectAvailability(month:string,blocks:Block[],fresh:boolean){const {count}=monthRange(month);return Array.from({length:count},(_,i)=>{const date=`${month}-${String(i+1).padStart(2,'0')}`;const start=new Date(`${date}T00:00:00+08:00`),end=new Date(start.getTime()+86400000);const overlapping=blocks.filter(b=>b.active&&intervalOverlaps(start,end,b.startsAt,b.endsAt));let status:AvailabilityStatus=fresh?'inquire':'unknown';if(overlapping.length)status='busy';if(overlapping.some(b=>b.kind==='unavailable'&&b.startsAt<=start&&b.endsAt>=end))status='unavailable';return {date,status};});}
+export const currentMonth=()=>taipeiDate(new Date()).slice(0,7);

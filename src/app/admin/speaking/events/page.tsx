@@ -1,0 +1,5 @@
+import Link from 'next/link';
+import { db } from '@/db/client';
+import { requireOwner } from '@/lib/auth';
+import { displayDate,statusLabels } from '@/domain/inquiry';
+export default async function Events(){await requireOwner();const rows=await db.speakingEvent.findMany({orderBy:{startsAt:'desc'},include:{organization:true,checklist:true},take:100});return <><div className="admin-heading"><h1>演講案件</h1></div><p>每一次分享，保存自己的版本與準備歷程。</p><div className="table-wrap"><table><thead><tr><th>案件／主題</th><th>單位</th><th>日期</th><th>狀態</th><th>準備</th></tr></thead><tbody>{rows.map(e=><tr key={e.id}><td><Link href={'/admin/speaking/events/'+e.id}>{e.code} →</Link><p style={{fontSize:12,margin:0}}>{e.title}</p></td><td>{e.organization.name}</td><td>{displayDate(e.startsAt)}</td><td><span className="badge">{statusLabels[e.status]}</span></td><td>{e.checklist.filter(c=>c.required&&c.completed).length}/{e.checklist.filter(c=>c.required).length}</td></tr>)}</tbody></table></div>{!rows.length&&<div className="empty">尚無正式演講。從邀約收件匣確認第一場分享。</div>}</>}

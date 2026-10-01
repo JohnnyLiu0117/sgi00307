@@ -1,0 +1,2 @@
+'use client';
+export default function ErrorPage({reset}:{reset:()=>void}){return <div className="prose"><h1>這一頁暫時無法載入。</h1><p>資料服務可能正在重新連線，請稍後再試。</p><button className="button" onClick={reset}>重新載入</button><p><a href="https://john-liu-edu.sgi00307.chatgpt.site/speaking">回到現有演講網站 →</a></p></div>}

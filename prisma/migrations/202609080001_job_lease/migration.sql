@@ -1,0 +1,5 @@
+CREATE TABLE "JobLease" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "owner" TEXT NOT NULL,
+  "expiresAt" TIMESTAMP(3) NOT NULL
+);

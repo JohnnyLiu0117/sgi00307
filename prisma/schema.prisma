@@ -1,0 +1,354 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid()) @db.Uuid
+  googleSubject String   @unique
+  email         String   @unique
+  enabled       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+}
+
+model TopicFamily {
+  id     String  @id
+  name   String
+  topics Topic[]
+}
+
+model Topic {
+  id        String          @id
+  slug      String          @unique
+  familyId  String
+  family    TopicFamily     @relation(fields: [familyId], references: [id])
+  title     String
+  summary   String
+  audience  String
+  track     String
+  outcomes  String[]
+  caveat    String?
+  published Boolean         @default(false)
+  sortOrder Int             @default(0)
+  offerings TopicOffering[]
+  versions  TopicVersion[]
+  articles  ArticleTopic[]
+  inquiries Inquiry[]
+}
+
+model TopicOffering {
+  id         String @id @default(uuid()) @db.Uuid
+  topicId    String
+  topic      Topic  @relation(fields: [topicId], references: [id])
+  label      String
+  minMinutes Int?
+  maxMinutes Int?
+
+  @@unique([topicId, label])
+}
+
+model TopicVersion {
+  id              String          @id @default(uuid()) @db.Uuid
+  topicId         String
+  topic           Topic           @relation(fields: [topicId], references: [id])
+  version         Int
+  label           String
+  audience        String
+  durationMinutes Int
+  outline         String
+  createdAt       DateTime        @default(now())
+  events          SpeakingEvent[]
+
+  @@unique([topicId, version])
+}
+
+model Article {
+  id           String         @id
+  title        String
+  url          String         @unique
+  topics       ArticleTopic[]
+  attributions Attribution[]
+}
+
+model ArticleTopic {
+  articleId String
+  topicId   String
+  article   Article @relation(fields: [articleId], references: [id])
+  topic     Topic   @relation(fields: [topicId], references: [id])
+
+  @@id([articleId, topicId])
+}
+
+model Organization {
+  id       String          @id @default(uuid()) @db.Uuid
+  name     String
+  contacts Contact[]
+  events   SpeakingEvent[]
+}
+
+model Contact {
+  id             String          @id @default(uuid()) @db.Uuid
+  organizationId String          @db.Uuid
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  name           String
+  email          String
+  phone          String
+  events         SpeakingEvent[]
+}
+
+model Inquiry {
+  quotes             Quote[]
+  portal             OrganizerPortal?
+  messages           MailDraft[]
+  id                 String               @id @default(uuid()) @db.Uuid
+  receipt            String               @unique @default(uuid())
+  idempotencyKey     String               @unique
+  payloadHash        String
+  organization       String
+  contactName        String
+  email              String
+  phone              String
+  venue              String
+  region             String
+  startsAt           DateTime             @db.Timestamptz(3)
+  durationMinutes    Int
+  attendees          Int
+  topicId            String?
+  topic              Topic?               @relation(fields: [topicId], references: [id])
+  customTopic        String?
+  status             String               @default("inquiry")
+  sourceChannel      String               @default("web")
+  sourceSubmissionId String?
+  consentVersion     String               @default("2026-09-v1")
+  createdAt          DateTime             @default(now())
+  rowVersion         Int                  @default(1)
+  requirements       InquiryRequirements?
+  attribution        Attribution?
+  event              SpeakingEvent?
+
+  @@unique([sourceChannel, sourceSubmissionId])
+  @@index([status, createdAt])
+}
+
+model InquiryRequirements {
+  id            String   @id @default(uuid()) @db.Uuid
+  inquiryId     String   @unique @db.Uuid
+  inquiry       Inquiry  @relation(fields: [inquiryId], references: [id])
+  audiences     String[]
+  ageRange      String?
+  problems      String
+  takeaways     String
+  interaction   Boolean
+  workshop      Boolean
+  worksheet     Boolean
+  customContent Boolean
+  equipment     String
+  notes         String?
+}
+
+model Attribution {
+  id        String   @id @default(uuid()) @db.Uuid
+  inquiryId String   @unique @db.Uuid
+  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id])
+  discovery String
+  sourceUrl String?
+  articleId String?
+  article   Article? @relation(fields: [articleId], references: [id])
+
+  @@index([articleId])
+}
+
+model SpeakingEvent {
+  preparation     PreparationTask[]
+  id              String            @id @default(uuid()) @db.Uuid
+  code            String            @unique
+  inquiryId       String?           @unique @db.Uuid
+  inquiry         Inquiry?          @relation(fields: [inquiryId], references: [id])
+  organizationId  String            @db.Uuid
+  organization    Organization      @relation(fields: [organizationId], references: [id])
+  contactId       String            @db.Uuid
+  contact         Contact           @relation(fields: [contactId], references: [id])
+  topicVersionId  String            @db.Uuid
+  topicVersion    TopicVersion      @relation(fields: [topicVersionId], references: [id])
+  title           String
+  status          String            @default("confirmed")
+  startsAt        DateTime          @db.Timestamptz(3)
+  endsAt          DateTime          @db.Timestamptz(3)
+  timezone        String            @default("Asia/Taipei")
+  venue           String
+  region          String
+  attendees       Int
+  durationMinutes Int
+  fee             Decimal?          @db.Decimal(12, 2)
+  currency        String            @default("TWD")
+  requirements    Json
+  notes           String            @default("")
+  confirmedBy     String
+  createdAt       DateTime          @default(now())
+  rowVersion      Int               @default(1)
+  checklist       ChecklistItem[]
+  blocks          CalendarBlock[]
+
+  @@index([status, startsAt])
+}
+
+model ChecklistItem {
+  id        String        @id @default(uuid()) @db.Uuid
+  eventId   String        @db.Uuid
+  event     SpeakingEvent @relation(fields: [eventId], references: [id])
+  code      String
+  label     String
+  completed Boolean       @default(false)
+  required  Boolean       @default(true)
+
+  @@unique([eventId, code])
+}
+
+model CalendarBlock {
+  id        String         @id @default(uuid()) @db.Uuid
+  eventId   String?        @db.Uuid
+  event     SpeakingEvent? @relation(fields: [eventId], references: [id])
+  sourceKey String         @unique
+  source    String
+  kind      String
+  startsAt  DateTime       @db.Timestamptz(3)
+  endsAt    DateTime       @db.Timestamptz(3)
+  active    Boolean        @default(true)
+
+  @@index([startsAt, endsAt])
+}
+
+model SyncState {
+  id            String    @id
+  lastSuccessAt DateTime?
+  error         String?
+}
+
+model OutboxJob {
+  id            String    @id @default(uuid()) @db.Uuid
+  eventId       String    @db.Uuid
+  version       Int
+  dedupeKey     String    @unique
+  status        String    @default("pending")
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now())
+  leaseUntil    DateTime?
+  error         String?
+  createdAt     DateTime  @default(now())
+
+  @@index([status, nextAttemptAt])
+}
+
+model Counter {
+  id    String @id
+  value Int    @default(0)
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  actor     String
+  action    String
+  entityId  String
+  createdAt DateTime @default(now())
+}
+
+model RateLimit {
+  key       String   @id
+  count     Int      @default(1)
+  expiresAt DateTime
+}
+
+model GoogleConnection {
+  scopes                String   @default("")
+  id                    String   @id @default("owner")
+  subject               String
+  refreshTokenEncrypted String
+  calendarId            String   @default("")
+  busyCalendarIds       String[]
+  updatedAt             DateTime @updatedAt
+}
+
+model Quote {
+  id           String    @id @default(uuid()) @db.Uuid
+  inquiryId    String    @db.Uuid
+  inquiry      Inquiry   @relation(fields: [inquiryId], references: [id])
+  version      Int
+  speakerFee   Decimal   @db.Decimal(12, 2)
+  travelFee    Decimal   @db.Decimal(12, 2)
+  otherFee     Decimal   @db.Decimal(12, 2)
+  terms        String
+  recording    String
+  validUntil   DateTime  @db.Timestamptz(3)
+  status       String    @default("draft")
+  acceptedName String?
+  acceptedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@unique([inquiryId, version])
+}
+
+model OrganizerPortal {
+  id             String    @id @default(uuid()) @db.Uuid
+  inquiryId      String    @unique @db.Uuid
+  inquiry        Inquiry   @relation(fields: [inquiryId], references: [id])
+  tokenHash      String    @unique
+  tokenEncrypted String
+  expiresAt      DateTime  @db.Timestamptz(3)
+  revoked        Boolean   @default(false)
+  organizerNotes String    @default("")
+  confirmedAt    DateTime?
+  materials      Json      @default("[]")
+  feedback       Feedback?
+}
+
+model Feedback {
+  id             String          @id @default(uuid()) @db.Uuid
+  portalId       String          @unique @db.Uuid
+  portal         OrganizerPortal @relation(fields: [portalId], references: [id])
+  rating         Int
+  name           String
+  comment        String
+  takeaway       String
+  photoUrl       String          @default("")
+  publishConsent Boolean         @default(false)
+  published      Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+}
+
+model PreparationTask {
+  id        String        @id @default(uuid()) @db.Uuid
+  eventId   String        @db.Uuid
+  event     SpeakingEvent @relation(fields: [eventId], references: [id])
+  label     String
+  dueAt     DateTime      @db.Timestamptz(3)
+  completed Boolean       @default(false)
+
+  @@index([completed, dueAt])
+}
+
+model MailDraft {
+  id         String    @id @default(uuid()) @db.Uuid
+  inquiryId  String?   @db.Uuid
+  inquiry    Inquiry?  @relation(fields: [inquiryId], references: [id])
+  dedupeKey  String    @unique
+  recipient  String
+  subject    String
+  body       String
+  status     String    @default("draft")
+  providerId String?
+  error      String?
+  createdAt  DateTime  @default(now())
+  sentAt     DateTime?
+
+  @@index([status, createdAt])
+}
+
+model JobLease {
+  id        String   @id
+  owner     String
+  expiresAt DateTime
+}

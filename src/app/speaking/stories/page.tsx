@@ -1,0 +1,5 @@
+import { db } from '@/db/client';
+import { PublicShell } from '@/components/public-shell';
+export const dynamic='force-dynamic';
+export const metadata={title:'演講回饋與成果'};
+export default async function Stories(){const rows=await db.feedback.findMany({where:{published:true,publishConsent:true},select:{id:true,name:true,comment:true,takeaway:true,createdAt:true,portal:{select:{inquiry:{select:{topic:{select:{title:true}}}}}}},orderBy:{createdAt:'desc'},take:50});return <PublicShell><main className="container section"><p className="eyebrow">FROM OUR CONVERSATIONS</p><h1>演講回饋與成果</h1><p>以下文字經回饋者同意並由講師審核分享。</p>{rows.map(r=><article className="panel" key={r.id}><h2>{r.portal.inquiry.topic?.title||'教育交流'}</h2><blockquote style={{whiteSpace:'pre-wrap'}}>{r.comment}</blockquote><p style={{whiteSpace:'pre-wrap'}}>帶回現場的收穫：{r.takeaway}</p><small>{r.name}</small></article>)}{!rows.length&&<p className="empty">目前尚無已授權公開的回饋。</p>}<a className="button" href="/speaking/invite">規劃一場教育對話 →</a></main></PublicShell>}

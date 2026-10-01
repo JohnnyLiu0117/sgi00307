@@ -1,0 +1,5 @@
+import { cookies } from 'next/headers';
+import { randomBytes } from 'node:crypto';
+import { requireOwner } from '@/lib/auth';
+export async function GET(req:Request){await requireOwner();const base=process.env.NEXTAUTH_URL;if(!base||!process.env.GOOGLE_CLIENT_ID)return Response.json({error:'Google 尚未設定'},{status:503});const state=randomBytes(32).toString('base64url');(await cookies()).set('google-calendar-state',state,{httpOnly:true,sameSite:'lax',secure:base.startsWith('https:'),maxAge:600,path:'/api/google'});const url=new URL('https://accounts.google.com/o/oauth2/v2/auth');url.search=new URLSearchParams({client_id:process.env.GOOGLE_CLIENT_ID,redirect_uri:base+'/api/google/callback',response_type:'code',scope:'openid email https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.freebusy'+(new URL(req.url).searchParams.get('mail')==='1'?' https://www.googleapis.com/auth/gmail.send':''),state,access_type:'offline',prompt:'consent',login_hint:process.env.OWNER_EMAIL||'sgi00307@gmail.com'}).toString();return Response.redirect(url);}
+

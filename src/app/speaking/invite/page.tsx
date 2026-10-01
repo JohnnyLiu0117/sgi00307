@@ -1,0 +1,8 @@
+import { PublicShell } from '@/components/public-shell';
+import { InviteForm } from '@/components/invite-form';
+import { publicTopics } from '@/services/topics';
+import { brand } from '@/lib/brand';
+import Link from 'next/link';
+export const dynamic='force-dynamic';
+export const metadata={title:'提出演講邀約'};
+export default async function Invite({searchParams}:{searchParams:Promise<{topic?:string;sourceArticle?:string}>}){const q=await searchParams;const topics=await publicTopics();return <PublicShell><section className="container page-intro"><p className="eyebrow">START A CONVERSATION</p><h1>說說你們的教育現場。</h1><p>不用先有完美的計畫。從對象、時間與期待開始，我們一起找到適合的分享。</p></section><div className="container form-layout"><InviteForm topics={topics.map(t=>({id:t.id,title:t.title}))} selectedTopic={topics.some(t=>t.id===q.topic)?q.topic:undefined} sourceUrl={q.sourceArticle?.slice(0,1000)}/><aside className="form-aside"><div><p className="eyebrow">BEFORE YOU SEND</p><h3>每次邀約，都是一次對話。</h3><p>內容、時長、互動與實作比例，都可以依學校需要討論。</p><Link className="text-link" href="/speaking/calendar">先看看演講行程 →</Link></div><div><h3>已有提案需要準備？</h3><p>取得講師介紹、正式形象照與演講方案。</p><a className="text-link" href={brand.blog+'/speaker-kit'}>查看 Speaker Kit ↗</a></div><div><h3>其他聯絡方式</h3><p><a href={'mailto:'+brand.email}>{brand.email}</a></p><a className="text-link" href={brand.form}>使用原 Google 邀約表單 ↗</a></div><p className="field-hint">聯絡資料僅供邀約處理，不會出現在公開行事曆。</p></aside></div></PublicShell>}

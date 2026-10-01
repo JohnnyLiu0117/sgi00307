@@ -1,0 +1,4 @@
+import Link from 'next/link';
+import { db } from '@/db/client';
+import { requireOwner } from '@/lib/auth';
+export default async function Topics(){await requireOwner();const topics=await db.topic.findMany({orderBy:{sortOrder:'asc'},include:{_count:{select:{versions:true}},family:true}});return <><div className="admin-heading"><h1>主題與版本</h1></div><p>保留每次分享的設計。更新主題介紹不會改動過去案件採用的大綱。</p><div className="topic-grid">{topics.map(t=><section className="panel" key={t.id}><p className="eyebrow">{t.family.name} · {t.track==='teacher'?'教師研習':'學生講座'}</p><h2>{t.title}</h2><p>{t._count.versions} 個確切大綱版本 <span className="badge">{t.published?'公開':'未公開'}</span></p><Link className="text-link" href={'/admin/speaking/topics/'+t.id}>編輯介紹與新增版本 →</Link></section>)}</div></>}

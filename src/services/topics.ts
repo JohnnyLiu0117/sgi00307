@@ -1,0 +1,2 @@
+import { db } from '@/db/client';
+export async function publicTopics(){return db.topic.findMany({where:{published:true},orderBy:{sortOrder:'asc'},select:{id:true,slug:true,title:true,summary:true,audience:true,track:true,outcomes:true,caveat:true,familyId:true,family:{select:{name:true}},offerings:{select:{label:true,minMinutes:true,maxMinutes:true}},articles:{select:{article:{select:{title:true,url:true}}}}}});}

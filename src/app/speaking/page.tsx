@@ -1,0 +1,17 @@
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowUpRight, ArrowRight, BookOpen, MessagesSquare, PencilLine } from 'lucide-react';
+import { PublicShell } from '@/components/public-shell';
+import { TopicCard } from '@/components/topic-card';
+import { publicTopics } from '@/services/topics';
+import { brand } from '@/lib/brand';
+export const dynamic='force-dynamic';
+export default async function Speaking(){const topics=(await publicTopics()).filter(t=>t.track==='teacher').map(t=>({...t,familyName:t.family.name}));return <PublicShell>
+  <section className="hero container"><div className="hero-copy"><div className="eyebrow"><span className="tiny-line"/> SPEAKING & WORKSHOPS</div><h1>把教育的可能，<br/>帶進<span>真實的課堂。</span></h1><p className="lead">一場好的分享，是下一次教育實踐的開始。</p><p>從 SEL、PBL 到 AI 與學生成長歷程，<br className="desktop"/>一起把值得相信的理念，變成可以帶回現場的方法。</p><div className="actions"><Link className="button" href="/speaking/invite">邀請我到學校分享 <ArrowUpRight size={18}/></Link><a className="text-link" href="#recommended-topics">探索演講主題 <ArrowRight size={18}/></a></div><div className="hero-note"><span className="dot"/> 教師研習 · 學生講座 · 實作工作坊 · 課程共備</div></div><div className="hero-portrait"><div className="portrait-frame"><Image src="/portrait.jpeg" alt="強尼老師劉宗騰正式個人形象照" fill priority sizes="(max-width: 760px) 90vw, 40vw"/><span className="image-label">從理解學生開始。</span></div><div className="portrait-caption"><span>強尼老師｜劉宗騰</span><small>教育設計實踐者</small><span className="handwritten">Learning, by design.</span></div></div></section>
+  <div className="topic-ribbon"><span>SEL <small>社會情緒學習</small></span><span>PBL <small>真實問題探究</small></span><span>AI <small>教師工作流</small></span><span>IGP <small>學生成長歷程</small></span></div>
+  <section className="section container" id="recommended-topics"><div className="section-heading"><div><p className="eyebrow">FROM PRACTICE TO SHARING</p><h2>從我的教育現場，<br/>找到適合你們的分享。</h2></div><div><p>依學校現況、參與對象與時間，<br/>一起調整案例與實作的比例。</p><Link className="text-link" href="/speaking/topics">查看所有 12 個講題 <ArrowUpRight size={18}/></Link></div></div><div className="topic-grid">{topics.slice(0,4).map((t,i)=><TopicCard key={t.id} topic={t} index={i}/>)}</div></section>
+  <section className="student-strip container"><div><p className="eyebrow">FOR STUDENTS</p><h2>陪學生，練習自己的下一步。</h2><p>情緒、關係、生涯探索，還有 AI 與研究。從青少年真實會遇見的問題開始。</p></div><Link className="button light" href="/speaking/topics?track=student">探索學生講座 <ArrowUpRight size={18}/></Link></section>
+  <section className="section container"><div className="section-heading"><div><p className="eyebrow">A CONVERSATION, A BEGINNING</p><h2>讓分享，回到你的現場。</h2></div><p>不必先有完整計畫。<br/>告訴我正在面對的問題，我們一起討論。</p></div><div className="steps"><div><MessagesSquare/><span>01 / 說說你們的需要</span><h3>從一個問題開始</h3><p>提出對象、時間與期待，也可以先選擇感興趣的講題。</p></div><div><PencilLine/><span>02 / 一起調整分享</span><h3>讓內容適合現場</h3><p>討論案例、互動與實作比例，再確認活動與合作細節。</p></div><div><BookOpen/><span>03 / 帶走可以做的事</span><h3>讓學習繼續發生</h3><p>把方法與設計帶回課堂，開啟下一次實踐與對話。</p></div></div></section>
+  <section className="closing"><p className="eyebrow">LET’S START A CONVERSATION</p><h2>下一場教育對話，<br/>也許就從這裡開始。</h2><Link className="button" href="/speaking/invite">提出演講／合作邀約 <ArrowUpRight size={18}/></Link><a className="text-link" href={brand.blog+'/speaker-kit'}>取得講師資料與 Speaker Kit <ArrowUpRight size={16}/></a></section>
+</PublicShell>}
+

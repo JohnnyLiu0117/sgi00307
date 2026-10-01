@@ -1,0 +1,2 @@
+import { origin } from '@/lib/brand';
+export default function robots(){return {rules:{userAgent:'*',allow:'/speaking',disallow:['/admin/','/api/','/login','/speaking/invite/thanks']},sitemap:origin+'/sitemap.xml'};}
