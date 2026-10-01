@@ -30,3 +30,10 @@ export async function requireOwner(){
   if(!user?.enabled||user.email!==(process.env.OWNER_EMAIL||'sgi00307@gmail.com').toLowerCase())redirect('/login?error=AccessDenied');
   return user;
 }
+export async function readOwner(){
+  if(!authConfigured())return null;
+  const session=await getServerSession(authOptions) as {ownerSubject?:string}|null;
+  if(!session?.ownerSubject)return null;
+  const user=await db.user.findUnique({where:{googleSubject:session.ownerSubject}});
+  return user?.enabled&&user.email===(process.env.OWNER_EMAIL||'sgi00307@gmail.com').toLowerCase()?user:null;
+}

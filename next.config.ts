@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   poweredByHeader: false,
   images: { remotePatterns: [{ protocol: 'https', hostname: 'john-liu-edu.sgi00307.chatgpt.site' }] },
+  async rewrites() { return [{source:'/media/:path*',destination:'https://john-liu-edu.sgi00307.chatgpt.site/media/:path*'},{source:'/images/:path*',destination:'https://john-liu-edu.sgi00307.chatgpt.site/images/:path*'}]; },
   async headers() {
     return [{ source: '/(.*)', headers: [
       { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -11,4 +12,4 @@ const config: NextConfig = {
   }
 };
 export default config;
-
+
