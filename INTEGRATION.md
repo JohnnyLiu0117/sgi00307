@@ -13,15 +13,24 @@ Blog 網址：`https://john-liu-edu.sgi00307.chatgpt.site`。
 - Sites/D1 與原演講資料庫不搬移；由工作室伺服器轉送管理請求。
 - 密鑰保留於伺服器環境變數。管理請求不快取，跨來源寫入與不支援的路徑會拒絕。
 
-## 正式啟用前需要完成
+## 連線設定與部署
 
 1. Vercel 原專案已設定 `SITES_QA_API_BASE`（Production）。程式也支援 `WEBSITE_BASE_URL`，固定只連接上述 Blog。
 2. Vercel 已設定 `SITES_QA_BRIDGE_SECRET`（Production）；程式也支援 `QA_BRIDGE_SECRET`。其值必須與 Blog Sites 的 `QA_BRIDGE_SECRET` 相同。不可填入 `NEXT_PUBLIC_*`，不可放進 GitHub。
 3. 發布 Blog 的網站內容管理 API 授權更新；保留原 Sites 專案、網址與 D1。
 4. 透過原 GitHub 連線部署至原 Vercel 專案；直接 Vercel 連接器目前回傳權限錯誤，但 GitHub 自動部署已確認正常。
-5. 使用本人 Google 帳號驗證 Q&A 讀取、草稿儲存及公開操作；AI 實際生成仍需網站的 OpenAI API 可正常使用。
+5. 本人 Google 帳號已可登入原工作室，並讀取 Blog 的 Q&A、AI 草稿、本人回覆、文章內容庫、人物履歷、成果、合作紀錄、照片素材與網站統計。
 
 本次未執行任何正式資料刪除、搬移、邀約寄信或 Q&A 公開。
+
+## 2026-10-02 驗收紀錄
+
+- 原 GitHub main 的整合版本 Vercel 狀態為 success；原工作室網址可開啟。
+- 已以本人登入狀態確認兩端管理連線正常；照片庫回傳 60 筆素材。
+- Q&A 驗收題保留在「本人草稿完成」，載入 AI 草稿及已儲存的本人修正版；題目明確標示「請勿公開」。
+- 封面上傳提示統一為 4MB；上傳／儲存期間鎖定編輯目標，避免圖片或回應套到另一筆。
+- 快速切換內容集合及成果分類時，過期列表回應不會覆蓋新分類。
+- 正式公開回覆、發布文章與刪除資料未用真實內容作驗收；仍由本人依正常編輯流程操作。
 
 ## 驗證指令
 
